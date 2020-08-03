@@ -19,7 +19,6 @@ const Post = new mongoose.model("Post", {
     default: () => {
       return new Date();
     },
-    avatar : String,
   },
 });
 module.exports = Post;

@@ -25,15 +25,19 @@ routes.get('/users/check', users.check);
 routes.post("/users/login",users.login);
 routes.get('/users/me',auth, users.me);
 routes.get("/users/:id",auth,users.getUser);
+routes.get("/users/:id/posts",auth,users.getPosts);
 
 
 routes.get("/posts",auth, posts.getAll);
-routes.get("/users/:id/posts",auth,posts.getAll);
+routes.put("/posts",upload.single("image"),auth , posts.create);
 routes.post('/posts/:id/likes', auth, posts.like);
 routes.delete('/posts/:id/likes/:userId', auth, posts.unlike);
-routes.put("/posts",upload.single("image"),auth , posts.create);
-routes.get("/posts/:id",auth,posts.getAll);
+routes.get("/posts",auth,posts.getAll);
 routes.get("/posts/:id",auth,posts.get);
+
+
+routes.put("/posts/:id/comment",auth,posts.addComment);
+routes.get("/posts/:id/comment",auth,posts.getComments);
 
 
 

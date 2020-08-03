@@ -1,8 +1,10 @@
 const User = require("../models/user");
 const md5 = require("md5");
 const config = require("../config/env/index");
+const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
 const Post = require("../models/post");
-const posts = require("./posts");
+const { ObjectId } = mongoose.Types;
 const DURATION_60D =  60 * 60 * 24 * 60 * 1000;
 
 
@@ -13,19 +15,18 @@ class Users{
         try{
             const users = await User
                 .find({username : regex})
-                .select(["username", "bio"])
+                .select(["username","avatar", "bio"])
                 .limit(10)
             res.json(users)
         }catch(err){
             res.status(500).json(err)
         }
-    
     }
     async getUser(req,res) {
         try {
             const user = await User
             .findById(req.params.id)
-            .select("username","bio", "avatar", "createdAt")
+            .select(["username","bio", "avatar", "createdAt"]);
             if (!user) {
                 res.sendStatus(404);
                 return;
@@ -53,9 +54,8 @@ class Users{
 		} catch(err) {
 			res.status(400).json(err);
 		}
-	}
-
-
+    }
+    
 
 
     async create(req, res) {
@@ -83,7 +83,8 @@ class Users{
                 res.sendStatus(401)
             return;
             }
-            res.cookie(config.cookieName, user._id, {maxAge : DURATION_60D})
+            const token = jwt.sign({id:user._id}, config.secret);
+            res.cookie(config.cookieName, token, {maxAge : DURATION_60D})
             res.json(user).sendStatus(200);
         }catch(err){
             res.sendStatus(500)
@@ -98,15 +99,15 @@ class Users{
 		try {
 			const posts = await Post
 				.find({
-                    user: req.params.id
+                    user: ObjectId(req.params.id)
                 })
-                .populate("user", [ "avatar", 'username'])
+                .populate('user', ['avatar', 'username'])
                 .sort({createdAt : req.query.sort || 1});
                 res.json(posts);
         }catch(err){
             res.sendStatus(400);
         }
-	}
+    }
 }
 
 module.exports = new Users();

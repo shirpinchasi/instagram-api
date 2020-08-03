@@ -1,27 +1,26 @@
 const mongoose = require("mongoose");
+const { ObjectId } = mongoose.Types;
 
 
-const User = new mongoose.model("User" , {
-    username : {
-        type : String,
+const Comment = new mongoose.model("Comment" , {
+    user : {
+        type : ObjectId,
         required : true,
-        unique : true
+        ref: "User"
     },
-    password : {
-        type : String,
+    PostId : {
+        type : ObjectId,
         required: true
     },
-    email : {
+    content : {
         type : String,
         required: true,
         unique : true
     },
-    bio: String,
-    avatar : String,
     createdAt : {
         type : Date,
         default : () => new Date()
-    }
+    },
 });
 
-module.exports = User;
+module.exports = Comment;
