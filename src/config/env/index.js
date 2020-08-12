@@ -7,4 +7,4 @@ if (process.env.NODE_ENV === "production") {
 }
 process.env.NODE_ENV
 
-module.exports = development;
+module.exports = env;
